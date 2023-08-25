@@ -8,7 +8,8 @@ router = APIRouter(prefix="/json", tags=["JSON"])
 
 @router.get("/imagesearch",
     description="Search for images in bing",
-    response_model=HTTPResponse
+    response_model=HTTPResponse,
+    responses=APYManager.get_responses()
 )
 async def bing_images(
     query: str = Query(description="The query to search in bing", max_length=150, min_length=1)

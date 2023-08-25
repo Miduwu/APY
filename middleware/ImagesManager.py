@@ -18,9 +18,9 @@ class LocalImagesManager(ABC):
             images[image_name] = image
         return images
 
-    def fetch(self, image_name: str):
+    def fetch(self, image_name: str) -> Image.Image:
         image = self.images.get(image_name)
         if image:
-            return image
+            return image.copy()
         else:
             raise ValueError(f"Image not found: {image_name}")

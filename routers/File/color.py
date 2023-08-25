@@ -5,9 +5,11 @@ from PIL import Image, ImageDraw
 router = APIRouter(prefix="/image", tags=["Files"])
 
 @router.get("/color",
-    description="Make an image of the color you provided"
+    description="Make an image of the color you provided",
+    response_class=Response,
+    responses=APYManager.get_responses(image=True)
 )
-async def show_color(
+async def color(
     code: str = Query(description="The hex code", regex="([a-fA-F0-9]{6}|[a-fA-F0-9]{3})"),
     width: int = Query(512, description="The image width", ge=15, le=1024),
     height: int = Query(512, description="The image height", ge=15, le=1024),
@@ -22,4 +24,4 @@ async def show_color(
         text = f"#{code}"
         draw.text((25, height - 80), text, fill="White", font=font)
     
-    return Response(content=APYManager.prepare(image).getvalue(), media_type="image/png")
+    return Response(content=APYManager.prepare(image), media_type="image/png")

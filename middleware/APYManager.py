@@ -4,6 +4,7 @@ import os, io, re, traceback, typing, json, numpy as np
 from dataclasses import dataclass
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
+from .schemas import HTTPResponse, HTTPBadResponse
 from PIL import Image, ImageDraw, ImageFont
 
 @dataclass(frozen=True)
@@ -77,7 +78,7 @@ class Util(abc.ABC):
             bio.seek(0, 0) # animated images (gif)
         else:
             bio.seek(0) # static images
-        return bio
+        return bio.getvalue()
     
     def ellipse(self, image: Image.Image):
         """
@@ -165,3 +166,20 @@ class Util(abc.ABC):
         """
         bbox = font.getbbox(text)
         return bbox[2] - bbox[0], bbox[3] - bbox[1]
+
+    def get_responses(self, image: bool = False, media_type: str ="image/png"):
+        """
+        Returns a dict of responses
+        """
+        description = "The image result"
+        return {
+            200: {"description": description, "content": {media_type: {}}}
+            if image
+            else {"model": HTTPResponse},
+            422: {"model": HTTPBadResponse},
+            400: {"model": HTTPBadResponse},
+            401: {"model": HTTPBadResponse},
+            404: {"model": HTTPBadResponse},
+            405: {"model": HTTPBadResponse},
+            500: {"model": HTTPBadResponse},
+        }
