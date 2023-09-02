@@ -158,12 +158,16 @@ class Util(abc.ABC):
         sorted_dominant_colors = dominant_colors[sorted_indices]
         return [list(map(int, color)) for color in sorted_dominant_colors[:colors]]
     
-    async def draw_gradient(self, base: Image.Image, xywh: typing.Tuple[typing.Tuple[int]] , colors: typing.List, direction: str = "vertical"):
+    async def draw_gradient(self, base: Image.Image, xywh: typing.Tuple[typing.Tuple[int]], colors: typing.List, direction: str = "vertical"):
         """
         Draws a gradient on the image.
         """
         if direction not in ("vertical", "horizontal"):
             raise ValueError("Invalid direction value. Only 'vertical' or 'horizontal' are allowed.")
+        
+        if len(colors) < 2:
+            raise ValueError("At least two colors are required for a gradient.")
+        
         gradient = []
         W, H = xywh[1]
         use = H if direction == "vertical" else W
@@ -176,13 +180,13 @@ class Util(abc.ABC):
             g = int(g1 * (1 - ratio) + g2 * ratio)
             b = int(b1 * (1 - ratio) + b2 * ratio)
             gradient.append((r, g, b))
+        
         d = ImageDraw.Draw(base)
         for i in range(use):
             if direction == "vertical":
-                d.line((xywh[0][0], xywh[0][1] + i, xywh[0][0] + use, xywh[0][1] + i + 1), fill=gradient[i], width=1)
+                d.line((xywh[0][0], xywh[0][1] + i, xywh[0][0] + W, xywh[0][1] + i + 1), fill=gradient[i], width=1)
             else:
-                d.line((xywh[0][0] + i, xywh[0][1], xywh[0][0] + i + 1, xywh[0][1] + use), fill=gradient[i], width=1)
-        
+                d.line((xywh[0][0] + i, xywh[0][1], xywh[0][0] + i + 1, xywh[0][1] + H), fill=gradient[i], width=1)
     
     def get_metrics(self, font: ImageFont.FreeTypeFont, text: str):
         """
