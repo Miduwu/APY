@@ -19,7 +19,7 @@ class TypefaceManager(ABC):
             typefaces.setdefault(typeface_name, {})[style] = typeface
         return typefaces
 
-    def fetch(self, name, style="Regular", size=12) -> ImageFont.FreeTypeFont:
+    def fetch(self, name: str, style: str ="Regular", size: int = 12) -> ImageFont.FreeTypeFont:
         typeface = self.typefaces.get(name, {}).get(style)
         if typeface:
             return typeface.font_variant(size=size)

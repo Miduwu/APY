@@ -1,11 +1,12 @@
 # import modules
-import importlib, importlib.util, abc, httpx, textwrap
-import os, io, re, traceback, typing, json, numpy as np
+import importlib, importlib.util, abc, httpx
+import os, io, typing, numpy as np
 from dataclasses import dataclass
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from .schemas import HTTPResponse, HTTPBadResponse
 from PIL import Image, ImageDraw, ImageFont
+from pilmoji import Pilmoji
 
 @dataclass(frozen=True)
 class Util(abc.ABC):
@@ -91,6 +92,31 @@ class Util(abc.ABC):
         image.putalpha(mask)
         return image
     
+    async def draw_text(self, image: Image.Image, **kwargs):
+        """
+        Draws an advanced text
+        """
+        with Pilmoji(image) as pilmoji:
+            pilmoji.text(**kwargs)
+    
+    def apply_rounded_borders(self, image: Image.Image, radius: int = 10):
+        """
+        Returns this image but with rounded borders
+        """
+        mask = Image.new("L", image.size, 0)
+        draw = ImageDraw.Draw(mask)
+        width, height = image.size
+        draw.rounded_rectangle((0, 0, width, height), radius, fill=255)
+        image.putalpha(mask)
+        return image
+    
+    def get_advanced_metrics(self, image: Image.Image, font: ImageFont.FreeTypeFont, text: str, spacing: int = 4):
+        """
+        Get the metrics of an advanced text
+        """
+        with Pilmoji(image) as pilmoji:
+            return pilmoji.getsize(text=text, font=font, spacing=spacing)
+    
     def kmeans(self, pixels, k, max_iter=100):
         """
         Returns the most common but with different scores pixels
@@ -113,7 +139,9 @@ class Util(abc.ABC):
             centroids = new_centroids
         return centroids
     
-    def get_dominant_colors(self, image: Image.Image, colors: int = 2):
+
+    
+    def get_dominant_colors(self, img: Image.Image, colors: int = 2):
         """
         Get the dominant colors of an image using clusters
         """
@@ -130,42 +158,49 @@ class Util(abc.ABC):
         sorted_dominant_colors = dominant_colors[sorted_indices]
         return [list(map(int, color)) for color in sorted_dominant_colors[:colors]]
     
-    async def draw_gradient(base, xy, colors, direction="vertical"):
+    async def draw_gradient(self, base: Image.Image, xywh: typing.Tuple[typing.Tuple[int]] , colors: typing.List, direction: str = "vertical"):
         """
-        Draws a gradient in an image
+        Draws a gradient on the image.
         """
-        def interpolate_color(color1, color2, ratio):
-            return tuple(int(c1 * (1 - ratio) + c2 * ratio) for c1, c2 in zip(color1, color2))
-        
-        width, height = xy[1]
+        if direction not in ("vertical", "horizontal"):
+            raise ValueError("Invalid direction value. Only 'vertical' or 'horizontal' are allowed.")
         gradient = []
-        color_range = len(colors) - 1
-        if direction == "vertical":
-            for i in range(height):
-                ratio = i / (height - 1)
-                color_index = int(ratio * color_range)
-                color1, color2 = colors[color_index], colors[color_index + 1]
-                gradient.append(interpolate_color(color1, color2, ratio))
-        elif direction == "horizontal":
-            for i in range(width):
-                ratio = i / (width - 1)
-                color_index = int(ratio * color_range)
-                color1, color2 = colors[color_index], colors[color_index + 1]
-                gradient.append(interpolate_color(color1, color2, ratio))
+        W, H = xywh[1]
+        use = H if direction == "vertical" else W
+        for i in range(use):
+            index = int(i / use * (len(colors) - 1))
+            r1, g1, b1, a1 = colors[index]
+            r2, g2, b2, a2 = colors[index + 1]
+            ratio = i / use * (len(colors)) - index
+            r = int(r1 * (1 - ratio) + r2 * ratio)
+            g = int(g1 * (1 - ratio) + g2 * ratio)
+            b = int(b1 * (1 - ratio) + b2 * ratio)
+            gradient.append((r, g, b))
         d = ImageDraw.Draw(base)
-        if direction == "vertical":
-            for i, color in enumerate(gradient):
-                d.line((xy[0][0], xy[0][1] + i, xy[0][0] + width, xy[0][1] + i + 1), fill=color, width=1)
-        elif direction == "horizontal":
-            for i, color in enumerate(gradient):
-                d.line((xy[0][0] + i, xy[0][1], xy[0][0] + i + 1, xy[0][1] + height), fill=color, width=1)
+        for i in range(use):
+            if direction == "vertical":
+                d.line((xywh[0][0], xywh[0][1] + i, xywh[0][0] + use, xywh[0][1] + i + 1), fill=gradient[i], width=1)
+            else:
+                d.line((xywh[0][0] + i, xywh[0][1], xywh[0][0] + i + 1, xywh[0][1] + use), fill=gradient[i], width=1)
+        
     
     def get_metrics(self, font: ImageFont.FreeTypeFont, text: str):
         """
         Get the text metrics
         """
-        bbox = font.getbbox(text)
-        return bbox[2] - bbox[0], bbox[3] - bbox[1]
+        if "\n" in text:
+            lines = text.split("\n")
+            W, H = 0, 0
+            for line in lines:
+                bbox = font.getbbox(line)
+                width, height = bbox[2] - bbox[0], bbox[3] - bbox[1]
+                if width > W:
+                    W = width
+                H += height
+            return W, H
+        else:
+            bbox = font.getbbox(text)
+            return bbox[2] - bbox[0], bbox[3] - bbox[1]
 
     def get_responses(self, image: bool = False, media_type: str ="image/png"):
         """

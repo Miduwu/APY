@@ -13,10 +13,10 @@ async def supreme(
     text: str = Query(description="The text for the image", max_lenght=55)
 ):
     font = TypeFaceManager.fetch("HelveticaNow", size=60)
-    W, H = APYManager.get_metrics(font, text)
+    W, H = APYManager.get_advanced_metrics(font, text)
     image = Image.new("RGBA", (W + 30, H + 20))
     draw = ImageDraw.Draw(image)
     draw.rounded_rectangle((0, 0, image.width, image.height), 10, fill="Red")
-    draw.text((15, 7.5), text, font=font, fill="White")
+    await APYManager.draw_text(image, xy=(15, 7.5), text=text, font=font, fill="White")
 
     return Response(content=APYManager.prepare(image), media_type="image/png")
