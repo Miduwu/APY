@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Query, Response
-from main import APYManager, TypeFaceManager, LocalImagesManager
+from main import APYManager, TypeFaceManager
 from PIL import Image, ImageDraw, ImageFilter
 
 router = APIRouter(prefix="/image", tags=["Files"])
@@ -7,7 +7,7 @@ router = APIRouter(prefix="/image", tags=["Files"])
 @router.get("/welcomecard",
     description="Make a welcomecard using your own data",
     response_class=Response,
-    responses=APYManager.get_responses(image=True)           
+    responses=APYManager.get_responses(image=True)
 )
 async def welcome_card(
     image: str = Query(description="The avatar URL", example="https://images.com/myimage.png"),
