@@ -38,7 +38,7 @@ class Util(abc.ABC):
                 if get == "json":
                     return res.json()
                 elif get == "text":
-                    return res.text()
+                    return res.text
                 elif get == "bytes":
                     return res.read()
         except:
