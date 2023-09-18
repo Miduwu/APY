@@ -26,7 +26,8 @@ LocalImagesManager = LocalImagesManager("static/assets")
 @apy.on_event("startup")
 async def startup():
     print("¡APY IS ONLINE!")
-    await APYManager.load_routes()
+    await APYManager._load_routes()
+    await APYManager._load_programming_languages()
 
 @apy.exception_handler(RequestValidationError)
 @apy.exception_handler(422)

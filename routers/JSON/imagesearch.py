@@ -18,4 +18,4 @@ async def bing_images(
     if not res:
         raise HTTPException(404, { "error": "I was unable to find something related to that", "loc": "query", "param_type": "query"})
     urls = re.findall("murl&quot;:&quot;(.*?)&quot;", res.decode("utf8"))
-    return HTTPResponse.use(status=200, data=list(urls))
+    return HTTPResponse.use(data=list(urls))

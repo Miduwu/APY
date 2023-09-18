@@ -4,15 +4,18 @@ import os, io, typing, numpy as np
 from dataclasses import dataclass
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
+from fastapi.encoders import jsonable_encoder
+from fastapi.openapi.utils import get_openapi
 from .schemas import HTTPResponse, HTTPBadResponse
 from PIL import Image, ImageDraw, ImageFont
 from pilmoji import Pilmoji
 
-@dataclass(frozen=True)
+@dataclass
 class Util(abc.ABC):
     app: FastAPI
+    languages = []
 
-    async def load_routes(self):
+    async def _load_routes(self):
         """
         Loads all the FastAPI routers from the directory
         """
@@ -25,6 +28,13 @@ class Util(abc.ABC):
                         self.app.include_router(getattr(router, "router"))
                     else:
                         pass
+    
+    async def _load_programming_languages(self) -> typing.List[typing.Dict[str, str | list]]:
+        """
+        Loads the programming language versions
+        """
+        res = await self.request(method="GET", url="https://emkc.org/api/v2/piston/runtimes")
+        self.languages = res
     
     async def request(self, *, method: str, url: str, params: typing.Dict[str, str] = {}, headers: typing.Dict[str, str] = {}, json: typing.Dict | None = None, get: typing.Literal["json", "text", "bytes"] = "json"):
         """
@@ -222,3 +232,8 @@ class Util(abc.ABC):
             405: {"model": HTTPBadResponse},
             500: {"model": HTTPBadResponse},
         }
+    def get_openapi_spec(self):
+        """
+        Returns the OpenAPI specifications
+        """
+        return jsonable_encoder(get_openapi(title=self.app.title, version=self.app.version, routes=self.app.routes))
