@@ -5,3 +5,5 @@ numpy==1.23.3
 pillow==10.0.0
 pydantic==1.10.2
 deep_translator==1.8.3
+python_weather==0.4.3
+pilmoji==2.0.3

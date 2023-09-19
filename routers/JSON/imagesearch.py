@@ -1,5 +1,5 @@
 import re
-from middleware.schemas import HTTPResponse
+from middle.schemas import HTTPResponse
 from fastapi.exceptions import HTTPException
 from fastapi import APIRouter, Query
 from main import APYManager

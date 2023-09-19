@@ -1,4 +1,4 @@
-from middleware.schemas import HTTPResponse
+from middle.schemas import HTTPResponse
 from fastapi.exceptions import HTTPException
 from fastapi import APIRouter, Body
 from main import APYManager

@@ -1,11 +1,11 @@
 # Import useful modules
 from fastapi import FastAPI, Request
 from fastapi.exceptions import HTTPException, RequestValidationError
-from middleware.schemas import HTTPBadResponse
-from middleware.FontsManager import TypefaceManager
-from middleware.ImagesManager import LocalImagesManager
+from middle.schemas import HTTPBadResponse
+from middle.FontsManager import TypefaceManager
+from middle.ImagesManager import LocalImagesManager
 from uvicorn import Config, run
-from middleware.APYManager import Util
+from middle.APYManager import Util
 from os import getenv
 from json import loads
 

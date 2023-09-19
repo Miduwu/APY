@@ -1,5 +1,5 @@
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
-from middleware.schemas import HTTPResponse
+from middle.schemas import HTTPResponse
 from fastapi.exceptions import HTTPException
 from fastapi import APIRouter, Query
 from difflib import get_close_matches
