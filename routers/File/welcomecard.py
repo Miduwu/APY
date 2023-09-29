@@ -20,7 +20,7 @@ async def welcome_card(
     image = Image.new("RGBA", (1024, 500), (0, 0, 0, 255))
     colors = APYManager.get_dominant_colors(avatar)
     if background:
-        background = await APYManager.open_image(background, param="background").resize(image.size, Image.Resampling.LANCZOS).filter(ImageFilter.GaussianBlur([0, 10][blur]))
+        background = (await APYManager.open_image(background, param="background")).resize(image.size, Image.Resampling.LANCZOS).filter(ImageFilter.GaussianBlur([0, 10][blur]))
         image.paste(background, (0, 0), background)
     else:
         await APYManager.draw_gradient(image, [(0, 0), (2048, 500)], colors)
