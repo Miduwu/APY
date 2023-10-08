@@ -1,7 +1,6 @@
 # import modules
 import importlib, importlib.util, abc, httpx
 import os, io, typing, numpy as np
-from dataclasses import dataclass
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.encoders import jsonable_encoder
@@ -10,15 +9,17 @@ from .schemas import HTTPResponse, HTTPBadResponse
 from PIL import Image, ImageDraw, ImageFont
 from pilmoji import Pilmoji
 
-@dataclass
 class Util(abc.ABC):
-    app: FastAPI
-    languages = []
+    def __init__(self, app: FastAPI):
+        print("initializated")
+        self.app = app
+        self.languages = []
 
     async def _load_routes(self):
         """
         Loads all the FastAPI routers from the directory
         """
+        await self._load_programming_languages()
         for folder in os.listdir("./routers"):
             for file in os.listdir(f"./routers/{folder}"):
                 if file.endswith(".py") and "ignore" not in file:
@@ -29,7 +30,7 @@ class Util(abc.ABC):
                     else:
                         pass
     
-    async def _load_programming_languages(self) -> typing.List[typing.Dict[str, str | list]]:
+    async def _load_programming_languages(self) -> None:
         """
         Loads the programming language versions
         """

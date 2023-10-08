@@ -4,15 +4,17 @@ from fastapi.exceptions import HTTPException, RequestValidationError
 from middle.schemas import HTTPBadResponse
 from middle.FontsManager import TypefaceManager
 from middle.ImagesManager import LocalImagesManager
-from uvicorn import Config, run
 from middle.APYManager import Util
 from os import getenv
 from json import loads
+from hypercorn.config import Config
+from hypercorn.asyncio import serve
+from asyncio import run
 
 apy = FastAPI(
     title="APY",
     description="A powerful image generation & JSON response API written in Python.",
-    version="2.0.0",
+    version="2.1.0",
     docs_url=None,
     redoc_url=None,
     debug=False
@@ -20,14 +22,15 @@ apy = FastAPI(
 
 APYManager = Util(apy)
 
+config = Config()
+config.bind = [f"0.0.0.0:{getenv('PORT') or 3000}"]
+
 TypeFaceManager = TypefaceManager("static/fonts")
 LocalImagesManager = LocalImagesManager("static/assets")
 
 @apy.on_event("startup")
 async def startup():
     print("¡APY IS ONLINE!")
-    await APYManager._load_routes()
-    await APYManager._load_programming_languages()
 
 @apy.exception_handler(RequestValidationError)
 @apy.exception_handler(422)
@@ -35,7 +38,7 @@ async def handle_validation_error(req: Request, exception: RequestValidationErro
     error_detail = loads(exception.json())[0] if hasattr(exception, "json") else exception.detail
     parameter, location = error_detail.get("loc", [None, None])
     status_code = exception.status_code if hasattr(exception, "status_code") else 422
-    error_message = error_detail.get("msg", "Unknown error").title()
+    error_message = error_detail.get("msg", "Unknown error")
     
     return HTTPBadResponse.use(
         status=status_code,
@@ -55,7 +58,11 @@ async def handle_internal_error(request: Request, exception: HTTPException):
         data={"error": "Internal server error", "loc": None, "param_type": None}
     )
 
-Config(apy)
+async def main():
+    await APYManager._load_routes()
+
+    await serve(apy, config)
 
 if __name__ == "__main__":
-    run("main:apy", port=getenv("PORT") or 3000, host="0.0.0.0", reload=True)
+    run(main())
+    # run("main:apy", port=getenv("PORT") or 3000, host="0.0.0.0", reload=True)

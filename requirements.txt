@@ -1,5 +1,5 @@
 fastapi==0.91.0
-uvicorn==0.20.0
+hypercorn[uvloop,httptools]
 httpx==0.24.1
 numpy==1.23.3
 pillow==10.0.0

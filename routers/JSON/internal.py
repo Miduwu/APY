@@ -3,7 +3,7 @@ from middle.schemas import HTTPResponse
 from fastapi.exceptions import HTTPException
 from fastapi import APIRouter, Query
 from difflib import get_close_matches
-from main import APYManager
+from main import APYManager, apy
 
 router = APIRouter(tags=["JSON"])
 
