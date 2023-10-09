@@ -3,19 +3,19 @@ from middle.schemas import HTTPResponse
 from fastapi.exceptions import HTTPException
 from fastapi import APIRouter, Query
 from difflib import get_close_matches
-from main import APYManager, apy
+from main import APYManager
 
 router = APIRouter(tags=["JSON"])
 
-@router.get("/", include_in_schema=False)
-async def home():
-    result = {}
-    routes = [x for x in APYManager.app.routes if "/json" in x.path or "/image" in x.path]
-    for route in routes:
-        prefix = route.path.split("/")[1]
-        result.setdefault(prefix, []).append(route.path)
-    result = {"base_url": "https://api.munlai.me", **result}
-    return HTTPResponse.use(data=result)
+#@router.get("/", include_in_schema=False)
+#async def home():
+#    result = {}
+#    routes = [x for x in APYManager.app.routes if "/json" in x.path or "/image" in x.path]
+#    for route in routes:
+#        prefix = route.path.split("/")[1]
+#        result.setdefault(prefix, []).append(route.path)
+#    result = {"base_url": "https://api.munlai.me", **result}
+#    return HTTPResponse.use(data=result)
 
 @router.get("/help",
     description="Search a doc specification about a route or a schema",
@@ -52,7 +52,7 @@ async def docs():
         redoc_js_url="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js",
     )
 
-@router.get("/launcher", include_in_schema=False)
+@router.get("/", include_in_schema=False)
 async def launcher():
     return get_swagger_ui_html(
         openapi_url=APYManager.app.openapi_url,

@@ -14,8 +14,8 @@ async def run_code(
     language: str = Body(description="The programming language", min_length=1, max_length=30, example="js"),
     code: str = Body(description="The code to run", max_length=3000)
 ):
-    print(language, "LANGUAGE")
-    print(APYManager.languages, "SSSS") 
+    if not APYManager.languages:
+        await APYManager._load_programming_languages()
     lang = next((x for x in APYManager.languages if x["language"] == language or language in x["aliases"]), None)
     if not lang:
         raise HTTPException(400, { "error": "The provided programming language is invalid", "metadata": {"languages": APYManager.languages}, "loc": "language", "param_type": "query"})

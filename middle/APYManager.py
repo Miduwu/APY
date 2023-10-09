@@ -11,7 +11,6 @@ from pilmoji import Pilmoji
 
 class Util(abc.ABC):
     def __init__(self, app: FastAPI):
-        print("initializated")
         self.app = app
         self.languages = []
 
