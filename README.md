@@ -2,9 +2,8 @@
 A powerful API written in Python
 
 ## Useful links
-- **API Url:** https://api.munlai.me
+- **API Url:** https://api.munlai.me/
 - **API Docs:** https://api.munlai.me/docs
-- **API Launcher:** https://api.munlai.me/launcher
 - **Discord:** https://discord.com/invite/3pT2WHG9EG
 
 
