@@ -9,4 +9,4 @@ python_weather==0.4.3
 pilmoji==2.0.3
 pydash==7.0.6
 colour==0.1.5
-periodic2023==2.2.1
+python-dotenv==0.21.0

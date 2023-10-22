@@ -11,6 +11,9 @@ from hypercorn.config import Config
 from hypercorn.asyncio import serve
 from asyncio import run
 from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
 
 apy = FastAPI(
     title="APY",
