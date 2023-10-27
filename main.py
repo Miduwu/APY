@@ -18,7 +18,7 @@ load_dotenv()
 apy = FastAPI(
     title="APY",
     description="A powerful image generation & JSON response API written in Python.",
-    version="2.2.0",
+    version="2.2.1",
     docs_url=None,
     redoc_url=None,
     debug=False

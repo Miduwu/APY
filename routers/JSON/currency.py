@@ -190,4 +190,4 @@ async def currency(
 
     converted = re.findall('[\d*\,]*\.\d*', results[0])[0]
 
-    return HTTPResponse.use(data={"source": {"code": source, "name": CODES[source.upper()]}, "target": {"code": "target", "name": CODES[target.upper()]}, "converted": converted})
+    return HTTPResponse.use(data={"source": {"code": source.upper(), "name": CODES[source.upper()]}, "target": {"code": target.upper(), "name": CODES[target.upper()]}, "converted": converted})

@@ -1,5 +1,5 @@
 # APY
-A powerful API written in Python
+A powerful API written in Python.
 
 ## Useful links
 - **API Url:** https://api.munlai.me/
