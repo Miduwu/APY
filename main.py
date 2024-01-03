@@ -7,8 +7,6 @@ from middle.ImagesManager import LocalImagesManager
 from middle.APYManager import Util
 from os import getenv
 from json import loads
-from hypercorn.config import Config
-from hypercorn.asyncio import serve
 from asyncio import run
 from datetime import datetime
 from dotenv import load_dotenv
@@ -25,9 +23,6 @@ apy = FastAPI(
 )
 
 APYManager = Util(apy)
-
-config = Config()
-config.bind = [f"0.0.0.0:{getenv('PORT') or 3000}"]
 
 TypeFaceManager = TypefaceManager("static/fonts")
 LocalImagesManager = LocalImagesManager("static/assets")
@@ -89,8 +84,6 @@ async def handle_internal_error(request: Request, exception: HTTPException):
 
 async def main():
     await APYManager._load_routes()
-
-    await serve(apy, config)
 
 if __name__ == "__main__":
     run(main())
