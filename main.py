@@ -1,6 +1,7 @@
 # Import useful modules
 from fastapi import FastAPI, Request
 from fastapi.exceptions import HTTPException, RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from middle.schemas import HTTPBadResponse
 from middle.FontsManager import TypefaceManager
 from middle.ImagesManager import LocalImagesManager
@@ -25,6 +26,9 @@ apy = FastAPI(
 )
 
 APYManager = Util(apy)
+apy.add_middleware(CORSMiddleware, allow_credentials=True, allow_methods=["*"],
+allow_headers=["*"],
+allow_origins=["*"])
 
 config = Config()
 config.bind = [f"0.0.0.0:{getenv('PORT') or 3000}"]
