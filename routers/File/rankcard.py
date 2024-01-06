@@ -23,10 +23,10 @@ router = APIRouter(prefix="/image", tags=["Files"])
 async def rank_card(
     image: str = Query(description="The avatar URL", example="https://images.com/myimage.png"),
     username: str = Query(description="The username"),
-    xp: int | float = Query(0, description="The user experience", le=1000000),
-    total: int | float = Query(10, description="The required experience", le=1000000),
-    level: int = Query(0, description="The user level", le=10000),
-    rank: int = Query(0, description="The user rank", le=10000),
+    xp: int | float = Query(description="The user experience", le=1000000, ge=0),
+    total: int | float = Query(description="The required experience", le=1000000, ge=0),
+    level: int = Query(0, description="The user level", le=10000, ge=0),
+    rank: int = Query(0, description="The user rank", le=10000, ge=0),
     color: str = Query("5865F2", description="The color of the bar", regex="([a-fA-F0-9]{6}|[a-fA-F0-9]{3})"),
     background: str = Query(None, description="The background image URL for the card"),
     blur: bool = Query(True, description="If the card background must have a blur filter")
@@ -60,8 +60,9 @@ async def rank_card(
 
     bar_color = Color("#"+color)
     bar_color.luminance = 0.20
-    draw.rounded_rectangle((285, 185, 285 + 425, 185 + 40), 15, fill=bar_color.hex_l)  
-    draw.rounded_rectangle((288, 188, calculate(xp, total) + 285, 188 + 34), 15, fill="#"+color, outline=bar_color.hex_l, width=7)
+    draw.rounded_rectangle((285, 185, 285 + 425, 185 + 40), 15, fill=bar_color.hex_l)
+    if xp >= 1:
+        draw.rounded_rectangle((288, 188, calculate(xp, total) + 285, 188 + 34), 15, fill="#"+color, outline=bar_color.hex_l, width=7)
 
     draw.text((290, 160), f"XP: {xp}   /   {total}", font=font2, fill="White")
 

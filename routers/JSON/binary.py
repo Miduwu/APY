@@ -1,5 +1,6 @@
 from middle.schemas import HTTPResponse
 from fastapi import APIRouter, Query
+from fastapi.exceptions import HTTPException
 from main import APYManager
 
 def text_to_bits(text, encoding="utf-8", errors="surrogatepass"):
@@ -21,7 +22,10 @@ router = APIRouter(prefix="/json", tags=["JSON"])
 async def binary(
     body: str = Query(description="The body to encode/decode", min_length=2, max_length=1000),
 ):
-    return HTTPResponse.use(data={
-        "original": body,
-        "converted": text_from_bits(body) if body.isdigit() else text_to_bits(body)
-    })
+    try:
+        return HTTPResponse.use(data={
+            "original": body,
+            "converted": text_from_bits(body) if body.isdigit() else text_to_bits(body)
+        })
+    except:
+        raise HTTPException(400 ,detail={"error": "Your body was unable to be decoded", "loc": "query", "param_type": "query"})
