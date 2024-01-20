@@ -19,7 +19,7 @@ load_dotenv()
 apy = FastAPI(
     title="APY",
     description="A powerful image generation & JSON response API written in Python.\n\nJoin the discord server: https://discord.com/invite/3pT2WHG9EG",
-    version="2.2.2",
+    version="2.3.0",
     docs_url=None,
     redoc_url=None,
     debug=False
